@@ -15,7 +15,6 @@ class QuanLySinhVien:
 
     def soLuongSinhVien(self):
         return self.listSinhVien.__len__()
-
     def nhapSinhVien(self):
         svId = self.generateID()
         name = input("Nhap ten sinh vien: ")

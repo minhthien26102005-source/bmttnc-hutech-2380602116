@@ -14,7 +14,6 @@ while (1 == 1):
     print("**  7. Hien thi danh sach sinh vien.                 **")
     print("**  0. Thoat                                         **")
     print("*******************************************************")
-
     try:
         key = int(input("Nhap tuy chon: "))
     except ValueError:
