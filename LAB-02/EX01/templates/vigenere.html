@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}Vigenère Cipher | HUTECH Cryptography Lab{% endblock %}
+
+{% block extra_head %}
+<style>
+    .tool-layout {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .panel {
+        padding: 2rem;
+    }
+
+    .panel-header {
+        border-bottom: 1px solid var(--glass-border);
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .panel-header h2 {
+        font-size: 1.5rem;
+        color: var(--text-main);
+    }
+
+    .mode-selector {
+        display: flex;
+        background: rgba(9, 13, 22, 0.5);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 4px;
+        margin-bottom: 1.5rem;
+    }
+
+    .mode-btn {
+        flex: 1;
+        padding: 0.6rem;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        font-weight: 600;
+        border-radius: 9px;
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .mode-btn.active {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    }
+
+    .result-container {
+        position: relative;
+        background: rgba(9, 13, 22, 0.6);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        min-height: 150px;
+        word-break: break-all;
+        color: var(--text-main);
+        font-family: 'Space Grotesk', monospace;
+        font-size: 1.1rem;
+    }
+
+    .copy-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        width: 36px;
+        height: 36px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        transition: var(--transition);
+    }
+
+    .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-main);
+    }
+
+    .copy-btn svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+    }
+
+    .info-box {
+        margin-top: 1.5rem;
+        background: rgba(99, 102, 241, 0.05);
+        border: 1px solid rgba(99, 102, 241, 0.15);
+        border-radius: 12px;
+        padding: 1rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .info-box svg {
+        width: 20px;
+        height: 20px;
+        fill: var(--primary);
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    @media (max-width: 992px) {
+        .tool-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <a href="/" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 8px; margin-bottom: 1rem;">
+        &larr; Quay lại Dashboard
+    </a>
+    <h1 style="font-size: 2.2rem; background: linear-gradient(to right, #ffffff, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        Vigenère Cipher (Mật mã Vigenère)
+    </h1>
+    <p style="color: var(--text-muted); margin-top: 5px;">Mã hóa thay thế đa ký tự sử dụng một chuỗi từ khóa K làm khóa dịch chuyển tuần hoàn.</p>
+</div>
+
+<div class="tool-layout">
+    <!-- Cấu hình và Đầu vào -->
+    <div class="glass-card panel">
+        <div class="panel-header">
+            <h2>Thiết lập bản tin</h2>
+            <span class="badge badge-indigo">Tham số</span>
+        </div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" id="btn-encrypt" onclick="setMode('encrypt')">MÃ HÓA</button>
+            <button class="mode-btn" id="btn-decrypt" onclick="setMode('decrypt')">GIẢI MÃ</button>
+        </div>
+
+        <div class="form-group">
+            <label for="text-input">Văn bản cần xử lý</label>
+            <textarea id="text-input" class="form-control" placeholder="Nhập bản rõ hoặc bản mã cần xử lý..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="key-input">Khóa từ K (Chỉ bao gồm chữ cái: a-z hoặc A-Z)</label>
+            <input type="text" id="key-input" class="form-control" value="KEY" placeholder="Ví dụ: HUTECH, SECRET, ..." />
+        </div>
+
+        <button class="btn btn-primary" id="submit-btn" style="width: 100%; margin-top: 1rem; padding: 0.9rem;" onclick="process()">
+            <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: white;">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+            Bắt đầu xử lý bản tin
+        </button>
+
+        <div class="info-box">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <span><strong>Nguyên lý:</strong> Mỗi ký tự khóa $K_i$ xác định lượng dịch chuyển cho ký tự bản rõ tương ứng $P_i$. Công thức mã hóa $C_i = (P_i + K_{i \pmod L}) \pmod{26}$ với $L$ là độ dài của từ khóa.</span>
+        </div>
+    </div>
+
+    <!-- Kết quả đầu ra -->
+    <div class="glass-card panel">
+        <div class="panel-header">
+            <h2>Kết quả đầu ra</h2>
+            <span class="badge badge-emerald" id="mode-badge">MÃ HÓA</span>
+        </div>
+
+        <div class="form-group">
+            <label>Văn bản sau xử lý</label>
+            <div class="result-container" id="result-text">
+                Kết quả sẽ hiển thị ở đây sau khi bạn nhấn nút xử lý...
+                <button class="copy-btn" id="btn-copy" onclick="copyResult()" title="Sao chép kết quả" style="display: none;">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentMode = 'encrypt';
+
+    function setMode(mode) {
+        currentMode = mode;
+        
+        // Update button states
+        document.getElementById('btn-encrypt').classList.toggle('active', mode === 'encrypt');
+        document.getElementById('btn-decrypt').classList.toggle('active', mode === 'decrypt');
+        
+        // Update badges & UI text
+        const modeBadge = document.getElementById('mode-badge');
+        if (mode === 'encrypt') {
+            modeBadge.textContent = 'MÃ HÓA';
+            modeBadge.className = 'badge badge-emerald';
+        } else {
+            modeBadge.textContent = 'GIẢI MÃ';
+            modeBadge.className = 'badge badge-indigo';
+        }
+    }
+
+    async function process() {
+        const textInput = document.getElementById('text-input').value.trim();
+        const keyInput = document.getElementById('key-input').value.trim();
+        const resultContainer = document.getElementById('result-text');
+        const copyBtn = document.getElementById('btn-copy');
+
+        copyBtn.style.display = 'none';
+
+        if (!textInput) {
+            resultContainer.innerHTML = '<span style="color: #fca5a5;">⚠️ Cảnh báo: Vui lòng nhập văn bản cần xử lý!</span>';
+            return;
+        }
+
+        if (!keyInput) {
+            resultContainer.innerHTML = '<span style="color: #fca5a5;">⚠️ Cảnh báo: Vui lòng nhập khóa từ K! Vui lòng nhập lại.</span>';
+            return;
+        }
+
+        // Validate key input only contains alphabet
+        if (!/^[a-zA-Z]+$/.test(keyInput)) {
+            resultContainer.innerHTML = '<span style="color: #fca5a5;">⚠️ Cảnh báo: Khóa K chỉ được chứa các ký tự chữ cái (a-z, A-Z)! Vui lòng nhập lại.</span>';
+            return;
+        }
+
+        resultContainer.innerHTML = 'Đang tính toán kết quả...';
+
+        const endpoint = currentMode === 'encrypt' ? '/api/vigenere/encrypt' : '/api/vigenere/decrypt';
+        const payload = currentMode === 'encrypt' ? 
+            { plain_text: textInput, key: keyInput } : 
+            { cipher_text: textInput, key: keyInput };
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Máy chủ phản hồi lỗi');
+            }
+            
+            if (!data.result) {
+                resultContainer.innerHTML = '<span style="color: #fca5a5;">⚠️ Cảnh báo: Không có kết quả đầu ra! Vui lòng kiểm tra lại văn bản đầu vào.</span>';
+            } else {
+                resultContainer.textContent = data.result;
+                resultContainer.appendChild(copyBtn);
+                copyBtn.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error(error);
+            resultContainer.innerHTML = `<span style="color: #fca5a5;">⚠️ Cảnh báo lỗi: ${error.message || 'Hệ thống không thể xử lý văn bản này. Vui lòng loại bỏ ký tự đặc biệt hoặc kiểm tra lại!'}</span>`;
+        }
+    }
+
+    function copyResult() {
+        const resultContainer = document.getElementById('result-text');
+        const text = resultContainer.childNodes[0].nodeValue || resultContainer.innerText;
+        
+        navigator.clipboard.writeText(text.trim()).then(() => {
+            alert('Đã sao chép kết quả vào Clipboard!');
+        }).catch(err => {
+            console.error('Lỗi khi sao chép:', err);
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | HUTECH Cryptography Lab{% endblock %}
+
+{% block extra_head %}
+<style>
+    .welcome-section {
+        text-align: center;
+        margin-bottom: 4rem;
+        position: relative;
+    }
+
+    .welcome-section h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: fadeInDown 0.8s ease-out;
+    }
+
+    .welcome-section p {
+        color: var(--text-muted);
+        font-size: 1.2rem;
+        max-width: 700px;
+        margin: 0 auto;
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .cipher-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 1rem;
+    }
+
+    .cipher-card {
+        padding: 2.5rem 2rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+    }
+
+    .cipher-card::before {
+        content: '';
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, rgba(99, 102, 241, 0) 70%);
+        top: -50px;
+        right: -50px;
+        pointer-events: none;
+        transition: var(--transition);
+    }
+
+    .cipher-card:hover::before {
+        transform: scale(1.5);
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(99, 102, 241, 0) 70%);
+    }
+
+    .icon-container {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        transition: var(--transition);
+        color: var(--primary);
+    }
+
+    .cipher-card:hover .icon-container {
+        background: rgba(99, 102, 241, 0.1);
+        border-color: rgba(99, 102, 241, 0.3);
+        transform: scale(1.05);
+        color: #a5b4fc;
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+    }
+
+    .icon-container svg {
+        width: 30px;
+        height: 30px;
+        fill: currentColor;
+    }
+
+    .cipher-card h3 {
+        font-size: 1.4rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-main);
+    }
+
+    .cipher-card p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+        flex-grow: 1;
+        line-height: 1.6;
+    }
+
+    .card-footer {
+        margin-top: auto;
+    }
+
+    /* Keyframes for entering animation */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .welcome-section h1 {
+            font-size: 2.2rem;
+        }
+        .welcome-section p {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+    <span class="badge badge-indigo" style="margin-bottom: 1rem;">Lab 02: Thực hành mã hóa cổ điển</span>
+    <h1>Hệ Thống Thực Hành Mật Mã Học</h1>
+    <p>Chào mừng bạn đến với Cổng thực hành học phần Bảo Mật Thông Tin Nâng Cao. Hãy lựa chọn thuật toán mã hóa bên dưới để bắt đầu thử nghiệm.</p>
+</div>
+
+<div class="cipher-grid">
+    <!-- Caesar Card -->
+    <div class="glass-card cipher-card">
+        <div class="icon-container">
+            <svg viewBox="0 0 24 24">
+                <!-- Key icon -->
+                <path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+            </svg>
+        </div>
+        <h3>Caesar Cipher</h3>
+        <p>Thuật toán dịch chuyển bảng chữ cái cổ điển nhất. Từng ký tự trong văn bản sẽ được thay thế bằng ký tự cách nó một số vị trí cố định (khóa K).</p>
+        <div class="card-footer">
+            <a href="/caesar" class="btn btn-primary" style="width: 100%;">Thử Ngay</a>
+        </div>
+    </div>
+
+    <!-- Vigenere Card -->
+    <div class="glass-card cipher-card">
+        <div class="icon-container">
+            <svg viewBox="0 0 24 24">
+                <!-- Text / matrix icon -->
+                <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm0 4h12v2H6v-2zm0-8h12v2H6V5z"/>
+            </svg>
+        </div>
+        <h3>Vigenère Cipher</h3>
+        <p>Hệ mật thay thế đa ký tự. Khắc phục nhược điểm của Caesar bằng cách sử dụng một từ khóa để dịch chuyển các ký tự liên tục theo chu kỳ tuần hoàn.</p>
+        <div class="card-footer">
+            <a href="/vigenere" class="btn btn-primary" style="width: 100%;">Thử Ngay</a>
+        </div>
+    </div>
+
+    <!-- Rail Fence Card -->
+    <div class="glass-card cipher-card">
+        <div class="icon-container">
+            <svg viewBox="0 0 24 24">
+                <!-- Zigzag/Fence icon -->
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+            </svg>
+        </div>
+        <h3>Rail Fence Cipher</h3>
+        <p>Mã hóa hoán vị theo hình zigzag. Văn bản gốc được ghi dọc xuống chéo qua các "đường ray" rồi đọc lại theo từng hàng ngang để cho ra bản mã.</p>
+        <div class="card-footer">
+            <a href="/railfence" class="btn btn-primary" style="width: 100%;">Thử Ngay</a>
+        </div>
+    </div>
+
+    <!-- Playfair Card -->
+    <div class="glass-card cipher-card">
+        <div class="icon-container">
+            <svg viewBox="0 0 24 24">
+                <!-- Grid layout icon -->
+                <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/>
+            </svg>
+        </div>
+        <h3>Playfair Cipher</h3>
+        <p>Thuật toán mã hóa thay thế đa chữ ghép cặp (digraphs). Sử dụng một ma trận khóa kích thước 5x5 để mã hóa từng cặp ký tự đồng thời.</p>
+        <div class="card-footer">
+            <a href="/playfair" class="btn btn-primary" style="width: 100%;">Thử Ngay</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

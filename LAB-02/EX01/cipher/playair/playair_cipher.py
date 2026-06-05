@@ -50,12 +50,18 @@ class PlayFairCipher:
     def playfair_decrypt(self, cipher_text, matrix):
         cipher_text = cipher_text.upper()
         decrypted_text = ""
-        decrypted_text1 = ""
 
         for i in range(0, len(cipher_text), 2):
             pair = cipher_text[i:i+2]
+            if len(pair) < 2:
+                continue
             row1, col1 = self.find_letter_coords(matrix, pair[0])
             row2, col2 = self.find_letter_coords(matrix, pair[1])
 
             if row1 == row2:
                 decrypted_text += matrix[row1][(col1 - 1) % 5] + matrix[row2][(col2 - 1) % 5]
+            elif col1 == col2:
+                decrypted_text += matrix[(row1 - 1) % 5][col1] + matrix[(row2 - 1) % 5][col2]
+            else:
+                decrypted_text += matrix[row1][col2] + matrix[row2][col1]
+        return decrypted_text
